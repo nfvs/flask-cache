@@ -283,6 +283,9 @@ The following configuration values exist for Flask-Cache:
 ``CACHE_REDIS_URL``             URL to connect to Redis server.
                                 Example ``redis://user:password@localhost:6379/2``.
                                 Used only for RedisCache.
+``CACHE_IGNORE_BACKEND_ERRORS`` Silently ignore backend exceptions, logging them instead.
+                                Defaults to ``False`` when the Flask app is in debug mode,
+                                and to ``True`` otherwise.
 =============================== ==================================================================
 
 

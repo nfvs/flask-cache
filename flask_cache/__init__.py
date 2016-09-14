@@ -147,6 +147,9 @@ class Cache(object):
         config.setdefault('CACHE_ARGS', [])
         config.setdefault('CACHE_TYPE', 'null')
         config.setdefault('CACHE_NO_NULL_WARNING', False)
+        config.setdefault('CACHE_IGNORE_BACKEND_ERRORS', not app.debug)
+
+        self._ignore_backends_errors = config['CACHE_IGNORE_BACKEND_ERRORS']
 
         if config['CACHE_TYPE'] == 'null' and not config['CACHE_NO_NULL_WARNING']:
             warnings.warn("Flask-Cache: CACHE_TYPE is set to null, "
@@ -288,7 +291,7 @@ class Cache(object):
                     cache_key = decorated_function.make_cache_key(*args, **kwargs)
                     rv = self.cache.get(cache_key)
                 except Exception:
-                    if current_app.debug:
+                    if not self._ignore_backends_errors:
                         raise
                     logger.exception("Exception possibly due to cache backend.")
                     return f(*args, **kwargs)
@@ -299,7 +302,7 @@ class Cache(object):
                         self.cache.set(cache_key, rv,
                                    timeout=decorated_function.cache_timeout)
                     except Exception:
-                        if current_app.debug:
+                        if not self._ignore_backends_errors:
                             raise
                         logger.exception("Exception possibly due to cache backend.")
                         return f(*args, **kwargs)
@@ -528,7 +531,7 @@ class Cache(object):
                     cache_key = decorated_function.make_cache_key(f, *args, **kwargs)
                     rv = self.cache.get(cache_key)
                 except Exception:
-                    if current_app.debug:
+                    if not self._ignore_backends_errors:
                         raise
                     logger.exception("Exception possibly due to cache backend.")
                     return f(*args, **kwargs)
@@ -539,7 +542,7 @@ class Cache(object):
                         self.cache.set(cache_key, rv,
                                    timeout=decorated_function.cache_timeout)
                     except Exception:
-                        if current_app.debug:
+                        if not self._ignore_backends_errors:
                             raise
                         logger.exception("Exception possibly due to cache backend.")
                 return rv
@@ -666,7 +669,7 @@ class Cache(object):
                 cache_key = f.make_cache_key(f.uncached, *args, **kwargs)
                 self.cache.delete(cache_key)
         except Exception:
-            if current_app.debug:
+            if not self._ignore_backends_errors:
                 raise
             logger.exception("Exception possibly due to cache backend.")
 
@@ -689,6 +692,6 @@ class Cache(object):
         try:
             self._memoize_version(f, delete=True)
         except Exception:
-            if current_app.debug:
+            if not self._ignore_backends_errors:
                 raise
             logger.exception("Exception possibly due to cache backend.")
