@@ -3,11 +3,11 @@ python:
  - "2.7"
  - "3.3"
 install:
- - pip install . --use-mirrors
- - pip install coverage --use-mirrors
- - pip install redis --use-mirrors
- - "if [[ $TRAVIS_PYTHON_VERSION == 2.7* ]]; then pip install pylibmc --use-mirrors; fi"
- - "if [[ $TRAVIS_PYTHON_VERSION == 3.3* ]]; then pip install python3-memcached --use-mirrors; fi"
+ - pip install .
+ - pip install coverage
+ - pip install redis
+ - "if [[ $TRAVIS_PYTHON_VERSION == 2.7* ]]; then pip install pylibmc; fi"
+ - "if [[ $TRAVIS_PYTHON_VERSION == 3.3* ]]; then pip install python3-memcached; fi"
 script: nosetests --with-coverage --cover-package=flask_cache
 services:
  - memcached
