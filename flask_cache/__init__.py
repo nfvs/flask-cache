@@ -544,10 +544,17 @@ class Cache(object):
                         logger.exception("Exception possibly due to cache backend.")
                 return rv
 
+            _cache_key = None
+            try:
+                _cache_key = self._memoize_make_cache_key(make_name, decorated_function)
+            except Exception:
+                if current_app.debug:
+                    raise
+                logger.exception("Exception possibly due to cache backend.")
+
             decorated_function.uncached = f
             decorated_function.cache_timeout = timeout
-            decorated_function.make_cache_key = self._memoize_make_cache_key(
-                                                make_name, decorated_function)
+            decorated_function.make_cache_key = _cache_key
             decorated_function.delete_memoized = lambda: self.delete_memoized(f)
 
             return decorated_function
